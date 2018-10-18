@@ -1,0 +1,57 @@
+version: '2'
+
+services:
+  laklak-mq:
+    image: rabbitmq:3.7-management-alpine
+    container_name: ${DEPLOYMENT_NAME}-mq
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - laklak-net-backend
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - laklak-mq-data:/var/lib/rabbitmq
+  
+  laklak-portainer:
+    image: portainer/portainer
+    restart: unless-stopped
+    container_name: ${DEPLOYMENT_NAME}-portainer
+    env_file:
+      - .env
+    networks:
+      - laklak-net-backend
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - laklak-portainer-data:/data
+    command: --admin-password "${PORTAINER_ADMIN_PASSWORD}" -H unix:///var/run/docker.sock
+
+  laklak-lb:
+    image: nginx:1.14
+    container_name: ${DEPLOYMENT_NAME}-lb
+    restart: unless-stopped
+    networks:
+      - laklak-net-backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy/scripts:/scripts:ro
+      - ./proxy/templates:/site-templates:ro
+    entrypoint:
+      - /scripts/start.sh
+    env_file:
+      - .env
+
+networks:
+  laklak-net-backend:
+    driver: bridge
+
+volumes:
+  laklak-mq-data:
+    driver: local
+
+  laklak-portainer-data:
+    driver: local
