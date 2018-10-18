@@ -18,9 +18,9 @@ This stack is bundled with a Portainer installation pre-configured to watch and 
 
 By default, use the following credentials to login:
 
-| Username | Password |
-|----------|----------|
-| admin | admin |
+- **URL**: [http://monitor-dev.laklak.chat](http://monitor-dev.laklak.chat)
+- **Username**: admin
+- **Password**: admin
 
 ## TODO
 - HTTPS support
